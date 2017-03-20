@@ -6,7 +6,7 @@ Bregman projections for regularized OT
 import numpy as np
 
 
-def sinkhorn(a,b, M, reg, numItermax = 1000, stopThr=1e-9, verbose=False, log=False):
+def sinkhorn(a,b, M, reg, numItermax = 1000, stopThr=1e-9, verbose=False, log=False, warning=False):
     """
     Solve the entropic regularization optimal transport problem
 
@@ -118,7 +118,8 @@ def sinkhorn(a,b, M, reg, numItermax = 1000, stopThr=1e-9, verbose=False, log=Fa
         if np.any(np.dot(K.T,u)==0) or np.any(np.isnan(u)) or np.any(np.isnan(v)):
             # we have reached the machine precision
             # come back to previous solution and quit loop
-            print('Warning: numerical errrors')
+            if warning:
+                print('Warning: numerical errrors')
             if cpt!=0:
                 u = uprev
                 v = vprev
@@ -149,7 +150,7 @@ def sinkhorn(a,b, M, reg, numItermax = 1000, stopThr=1e-9, verbose=False, log=Fa
     else:
         return u.reshape((-1,1))*K*v.reshape((1,-1))
 
-def sinkhorn_stabilized(a,b, M, reg, numItermax = 1000,tau=1e3, stopThr=1e-9,warmstart=None, verbose=False,print_period=20, log=False):
+def sinkhorn_stabilized(a,b, M, reg, numItermax = 1000,tau=1e3, stopThr=1e-9,warmstart=None, verbose=False,print_period=20, log=False, warning = False):
     """
     Solve the entropic regularization OT problem with log stabilization
 
@@ -316,7 +317,8 @@ def sinkhorn_stabilized(a,b, M, reg, numItermax = 1000,tau=1e3, stopThr=1e-9,war
         if np.any(np.dot(K.T,u)==0) or np.any(np.isnan(u)) or np.any(np.isnan(v)):
             # we have reached the machine precision
             # come back to previous solution and quit loop
-            print('Warning: numerical errrors')
+            if warning:
+                print('Warning: numerical errrors')
             if cpt!=0:
                 u = uprev
                 v = vprev
@@ -334,7 +336,7 @@ def sinkhorn_stabilized(a,b, M, reg, numItermax = 1000,tau=1e3, stopThr=1e-9,war
     else:
         return get_Gamma(alpha,beta,u,v)
 
-def sinkhorn_epsilon_scaling(a,b, M, reg, numItermax = 100, epsilon0=1e4, numInnerItermax = 100,tau=1e3, stopThr=1e-9,warmstart=None, verbose=False,print_period=10, log=False):
+def sinkhorn_epsilon_scaling(a,b, M, reg, numItermax = 100, epsilon0=1e4, numInnerItermax = 100,tau=1e3, stopThr=1e-9,warmstart=None, verbose=False,print_period=10, log=False, warning = False):
     """
     Solve the entropic regularization optimal transport problem with log
     stabilization and epsilon scaling.
@@ -467,7 +469,7 @@ def sinkhorn_epsilon_scaling(a,b, M, reg, numItermax = 100, epsilon0=1e4, numInn
 
         regi=get_reg(cpt)
 
-        G,logi=sinkhorn_stabilized(a,b, M, regi, numItermax = numInnerItermax, stopThr=1e-9,warmstart=(alpha,beta), verbose=False,print_period=20,tau=tau, log=True)
+        G,logi=sinkhorn_stabilized(a,b, M, regi, numItermax = numInnerItermax, stopThr=1e-9,warmstart=(alpha,beta), verbose=False,print_period=20,tau=tau, log=log, warning = warning)
 
         alpha=logi['alpha']
         beta=logi['beta']

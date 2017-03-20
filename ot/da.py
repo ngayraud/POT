@@ -15,7 +15,7 @@ def indices(a, func):
     return [i for (i, val) in enumerate(a) if func(val)]
 
 
-def sinkhorn_lpl1_mm(a,labels_a, b, M, reg, eta=0.1,numItermax = 10,numInnerItermax = 200,stopInnerThr=1e-9,verbose=False,log=False):
+def sinkhorn_lpl1_mm(a,labels_a, b, M, reg, eta=0.1,numItermax = 10,numInnerItermax = 200,stopInnerThr=1e-9,verbose=False,log=False, warning = False):
     """
     Solve the entropic regularization optimal transport problem with nonconvex group lasso regularization
 
@@ -103,7 +103,7 @@ def sinkhorn_lpl1_mm(a,labels_a, b, M, reg, eta=0.1,numItermax = 10,numInnerIter
 
     for cpt in range(numItermax):
         Mreg = M + eta*W
-        transp=sinkhorn(a,b,Mreg,reg,numItermax=numInnerItermax, stopThr=stopInnerThr)
+        transp=sinkhorn(a,b,Mreg,reg,numItermax=numInnerItermax, stopThr=stopInnerThr,verbose = verbose, log=log, warning = warning)
         # the transport has been computed. Check if classes are really separated
         W = np.ones((Nini,Nfin))
         for t in range(Nfin):

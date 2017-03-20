@@ -195,7 +195,7 @@ def cg(a,b,M,reg,f,df,G0=None,numItermax = 200,stopThr=1e-9,verbose=False,log=Fa
     else:
         return G
 
-def gcg(a,b,M,reg1,reg2,f,df,G0=None,numItermax = 10,numInnerItermax = 200,stopThr=1e-9,verbose=False,log=False):
+def gcg(a,b,M,reg1,reg2,f,df,G0=None,numItermax = 10,numInnerItermax = 200,stopThr=1e-9,verbose=False,log=False,warning=False):
     """
     Solve the general regularized OT problem with the generalized conditional gradient
 
@@ -297,8 +297,8 @@ def gcg(a,b,M,reg1,reg2,f,df,G0=None,numItermax = 10,numInnerItermax = 200,stopT
         Mi=M+reg2*df(G)
 
         # solve linear program with Sinkhorn
-        #Gc = sinkhorn_stabilized(a,b, Mi, reg1, numItermax = numInnerItermax)
-        Gc = sinkhorn(a,b, Mi, reg1, numItermax = numInnerItermax)
+        #Gc = sinkhorn_stabilized(a,b, Mi, reg1, numItermax = numInnerItermax,verbose = verbose, warning = warning)
+        Gc = sinkhorn(a,b, Mi, reg1, numItermax = numInnerItermax,verbose = verbose, warning = warning)
 
         deltaG=Gc-G
 
