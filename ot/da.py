@@ -103,7 +103,9 @@ def sinkhorn_lpl1_mm(a,labels_a, b, M, reg, eta=0.1,numItermax = 10,numInnerIter
 
     for cpt in range(numItermax):
         Mreg = M + eta*W
-        transp=sinkhorn(a,b,Mreg,reg,numItermax=numInnerItermax, stopThr=stopInnerThr,verbose = verbose, log=log, warning = warning)
+        #Nathalie: added log information
+        transp,the_log=sinkhorn(a,b,Mreg,reg,numItermax=numInnerItermax, stopThr=stopInnerThr,verbose = verbose, log=True, warning = warning)
+
         # the transport has been computed. Check if classes are really separated
         W = np.ones((Nini,Nfin))
         for t in range(Nfin):
@@ -120,10 +122,13 @@ def sinkhorn_lpl1_mm(a,labels_a, b, M, reg, eta=0.1,numItermax = 10,numInnerIter
             # do it only for unlabbled data
             if idx_begin==-1:
                 W[indices_labels[0],t]=np.min(all_maj)
+        #Nathalie: added log information
+    if log:
+        return transp,the_log 
+    else:
+        return transp
 
-    return transp
-
-def sinkhorn_l1l2_gl(a,labels_a, b, M, reg, eta=0.1,numItermax = 10,numInnerItermax = 200,stopInnerThr=1e-9,verbose=False,log=False):
+def sinkhorn_l1l2_gl(a,labels_a, b, M, reg, eta=0.1,numItermax = 10,numInnerItermax = 200,stopInnerThr=1e-9,verbose=False,log=False, warning = False):
     """
     Solve the entropic regularization optimal transport problem with group lasso regularization
 
@@ -213,7 +218,7 @@ def sinkhorn_l1l2_gl(a,labels_a, b, M, reg, eta=0.1,numItermax = 10,numInnerIter
         return W   
 
             
-    return gcg(a,b,M,reg,eta,f,df,G0=None,numItermax = numItermax,numInnerItermax=numInnerItermax, stopThr=stopInnerThr,verbose=verbose,log=log)
+    return gcg(a,b,M,reg,eta,f,df,G0=None,numItermax = numItermax,numInnerItermax=numInnerItermax, stopThr=stopInnerThr,verbose=verbose,log=log,warning = warning)
     
     
     

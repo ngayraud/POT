@@ -6,7 +6,7 @@ Optimization algorithms for OT
 import numpy as np
 from scipy.optimize.linesearch import scalar_search_armijo
 from .lp import emd
-from .bregman import sinkhorn
+from .bregman import sinkhorn,sinkhorn_stabilized
 
 # The corresponding scipy function does not work for matrices
 def line_search_armijo(f,xk,pk,gfk,old_fval,args=(),c1=1e-4,alpha0=0.99):

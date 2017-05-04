@@ -4,6 +4,7 @@ Bregman projections for regularized OT
 """
 
 import numpy as np
+from .lp import emd
 
 
 def sinkhorn(a,b, M, reg, numItermax = 1000, stopThr=1e-9, verbose=False, log=False, warning=False):
@@ -42,7 +43,7 @@ def sinkhorn(a,b, M, reg, numItermax = 1000, stopThr=1e-9, verbose=False, log=Fa
     numItermax : int, optional
         Max number of iterations
     stopThr : float, optional
-        Stop threshol on error (>0)
+        Stop threshold on error (>0)
     verbose : bool, optional
         Print information along iterations
     log : bool, optional
@@ -111,23 +112,48 @@ def sinkhorn(a,b, M, reg, numItermax = 1000, stopThr=1e-9, verbose=False, log=Fa
     #print np.min(K)
 
     Kp = np.dot(np.diag(1/a),K)
-    transp = K
     cpt = 0
     err=1
     while (err>stopThr and cpt<numItermax):
-        if np.any(np.dot(K.T,u)==0) or np.any(np.isnan(u)) or np.any(np.isnan(v)):
-            # we have reached the machine precision
-            # come back to previous solution and quit loop
-            if warning:
-                print('Warning: numerical errrors')
-            if cpt!=0:
-                u = uprev
-                v = vprev
-            break
+        
+        #Block 1
         uprev = u
         vprev = v
         v = np.divide(b,np.dot(K.T,u))
         u = 1./np.dot(Kp,v)
+        #End of Block 1  
+           
+        #Block 2a                    
+        #Nathalie: Added isinf check
+        if np.any(np.dot(K.T,u)==0) or np.any(np.isnan(u)) or np.any(np.isnan(v)) or np.any(np.isinf(u)) or np.any(np.isinf(v)):
+            # we have reached the machine precision
+            # come back to previous solution and quit loop
+            if warning:
+                print('Warning: numerical errrors')
+                if verbose:
+                    print('{:9s}|{:9s}|{:9s}|{:9s}|{:9s}'.format('any K=0','u is nan','v is nan','u is inf','v is inf')+'\n' )
+                    print('{:9b}|{:9b}|{:9b}|{:9b}|{:9b}'.format(np.any(np.dot(K.T,u)==0),np.any(np.isnan(u)),np.any(np.isnan(v)),np.any(np.isinf(u)),np.any(np.isinf(v))))
+            if cpt!=0: 
+                u = uprev
+                v = vprev
+            else:
+                #Nathalie: call simple Earth Mover's Distance instead.
+                if warning:
+                    print('Warning: computed unregularized OT instead')
+                if log:
+                    log['u']=None
+                    log['v']=None
+                    transp=emd(a,b,M)
+                    err = np.linalg.norm((np.sum(transp,axis=0)-b))**2
+                    log['err'].append(err)
+                    return transp,log
+                else:    
+                    return emd(a,b,M)  
+            break
+        #End of Block 2a
+ 
+
+                
         if cpt%10==0:
             # we can speed up the process by checking for the error only all the 10th iterations
             transp = np.dot(np.diag(u),np.dot(K,np.diag(v)))
@@ -140,10 +166,11 @@ def sinkhorn(a,b, M, reg, numItermax = 1000, stopThr=1e-9, verbose=False, log=Fa
                     print('{:5s}|{:12s}'.format('It.','Err')+'\n'+'-'*19)
                 print('{:5d}|{:8e}|'.format(cpt,err))
         cpt = cpt +1
+              
     if log:
         log['u']=u
         log['v']=v
-          
+
     #print 'err=',err,' cpt=',cpt
     if log:
         return u.reshape((-1,1))*K*v.reshape((1,-1)),log
@@ -192,7 +219,7 @@ def sinkhorn_stabilized(a,b, M, reg, numItermax = 1000,tau=1e3, stopThr=1e-9,war
     numItermax : int, optional
         Max number of iterations
     stopThr : float, optional
-        Stop threshol on error (>0)
+        Stop threshold on error (>0)
     verbose : bool, optional
         Print information along iterations
     log : bool, optional
