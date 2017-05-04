@@ -59,6 +59,7 @@ def line_search_armijo(f,xk,pk,gfk,old_fval,args=(),c1=1e-4,alpha0=0.99):
         phi0 = old_fval
 
     derphi0 = np.sum(pk*gfk) # Quickfix for matrices
+
     alpha,phi1 = scalar_search_armijo(phi,phi0,derphi0,c1=c1,alpha0=alpha0)
 
     return alpha,fc[0],phi1
@@ -304,6 +305,8 @@ def gcg(a,b,M,reg1,reg2,f,df,G0=None,numItermax = 10,numInnerItermax = 200,stopT
 
         # line search
         dcost=Mi+reg1*(1+np.log(G)) #??
+#        print np.sum(deltaG*dcost),np.sum(deltaG),np.sum(dcost),np.sum(Mi),np.sum(np.log(G)) Nathalie: there is a problem with the last term:np.sum(np.log(G)) getting larger and larger, ergo 
+#        dcost gets smaller and smaller (to the order of 1e-20) and blows up the linesearch.
         alpha,fc,f_val = line_search_armijo(cost,G,deltaG,dcost,f_val)
 
         G=G+alpha*deltaG
