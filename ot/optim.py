@@ -309,6 +309,11 @@ def gcg(a,b,M,reg1,reg2,f,df,G0=None,numItermax = 10,numInnerItermax = 200,stopT
 #        dcost gets smaller and smaller (to the order of 1e-20) and blows up the linesearch.
         alpha,fc,f_val = line_search_armijo(cost,G,deltaG,dcost,f_val)
 
+        #Nathalie: just break, line_search_armijo is not convergind any more
+        if alpha is None:
+            if warning: print 'Armijo search did not converge'
+            break;
+            
         G=G+alpha*deltaG
 
         # test convergence
