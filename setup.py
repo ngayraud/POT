@@ -21,7 +21,7 @@ __version__ = re.search(
 ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
-# convert markdown readme to rst in pypandoc installed
+# convert markdown readme to rst if pypandoc installed
 try:
    import pypandoc
    README = pypandoc.convert('README.md', 'rst')
@@ -38,13 +38,13 @@ setup(name='POT',
       url='https://github.com/rflamary/POT',
       packages=find_packages(),
       ext_modules = cythonize(Extension(
-                "ot.lp.emd",                                # the extension name
-                 sources=["ot/lp/emd.pyx", "ot/lp/EMD_wrap.cpp"], # the Cython source and
+                "ot.lp.emd_wrap",                                # the extension name
+                 sources=["ot/lp/emd_wrap.pyx", "ot/lp/EMD_wrapper.cpp"], # the Cython source and
                                                         # additional C++ source files
                  language="c++",                        # generate and compile C++ code,
                  include_dirs=[numpy.get_include(),os.path.join(ROOT,'ot/lp')])),
       platforms=['linux','macosx','windows'],
-      download_url='https://github.com/rflamary/POT/archive/V{}.tar.gz'.format(__version__),
+      download_url='https://github.com/rflamary/POT/archive/{}.tar.gz'.format(__version__),
       license = 'MIT',
       scripts=[],
       data_files=[],

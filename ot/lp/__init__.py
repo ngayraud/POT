@@ -5,7 +5,7 @@ Solvers for the original linear program OT problem
 
 import numpy as np
 # import compiled emd
-from .emd import emd_c, emd2_c
+from .emd_wrap import emd_c, emd2_c
 from ..utils import parmap
 import multiprocessing
 
@@ -48,6 +48,7 @@ def emd(a, b, M):
 
     Simple example with obvious solution. The function emd accepts lists and
     perform automatic conversion to numpy arrays
+    
     >>> import ot
     >>> a=[.5,.5]
     >>> b=[.5,.5]
@@ -117,6 +118,8 @@ def emd2(a, b, M,processes=multiprocessing.cpu_count()):
 
     Simple example with obvious solution. The function emd accepts lists and
     perform automatic conversion to numpy arrays
+    
+    
     >>> import ot
     >>> a=[.5,.5]
     >>> b=[.5,.5]

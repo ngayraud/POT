@@ -18,20 +18,31 @@ import re
 import sphinx_gallery
 
 # !!!! allow readthedoc compilation
-from unittest.mock import MagicMock
-sys.path.insert(0, os.path.abspath("../.."))
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import Mock as MagicMock
+    ## check whether in the source directory...
+#
+
+
+#!!! This should be commented when executing sphinx-gallery
 class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
-        return Mock()
-MOCK_MODULES = [ 'emd','ot.lp.emd']
+        return MagicMock()
+MOCK_MODULES = ['ot.lp.emd_wrap','autograd','pymanopt','cudamat','autograd.numpy','pymanopt.manifolds','pymanopt.solvers']
+# 'autograd.numpy','pymanopt.manifolds','pymanopt.solvers',
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 # !!!!
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath("../.."))
+
 
 # -- General configuration ------------------------------------------------
 
