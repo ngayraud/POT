@@ -3,15 +3,20 @@
 Solvers for the original linear program OT problem
 """
 
-import numpy as np
-# import compiled emd
-from .emd_wrap import emd_c, emd2_c
-from ..utils import parmap
+# Author: Remi Flamary <remi.flamary@unice.fr>
+#
+# License: MIT License
+
 import multiprocessing
 
+import numpy as np
+
+# import compiled emd
+from .emd_wrap import emd_c, check_result
+from ..utils import parmap
 
 
-def emd(a, b, M):
+def emd(a, b, M, numItermax=100000, log=False):
     """Solves the Earth Movers distance problem and returns the OT matrix
 
 
@@ -36,11 +41,20 @@ def emd(a, b, M):
         Target histogram (uniform weigth if empty list)
     M : (ns,nt) ndarray, float64
         loss matrix
+    numItermax : int, optional (default=100000)
+        The maximum number of iterations before stopping the optimization
+        algorithm if it has not converged.
+    log: boolean, optional (default=False)
+        If True, returns a dictionary containing the cost and dual
+        variables. Otherwise returns only the optimal transportation matrix.
 
     Returns
     -------
     gamma: (ns x nt) ndarray
         Optimal transportation matrix for the given parameters
+    log: dict
+        If input log is true, a dictionary containing the cost and dual
+        variables and exit status
 
 
     Examples
@@ -48,7 +62,7 @@ def emd(a, b, M):
 
     Simple example with obvious solution. The function emd accepts lists and
     perform automatic conversion to numpy arrays
-    
+
     >>> import ot
     >>> a=[.5,.5]
     >>> b=[.5,.5]
@@ -76,14 +90,25 @@ def emd(a, b, M):
 
     # if empty array given then use unifor distributions
     if len(a) == 0:
-        a = np.ones((M.shape[0], ), dtype=np.float64)/M.shape[0]
+        a = np.ones((M.shape[0],), dtype=np.float64) / M.shape[0]
     if len(b) == 0:
-        b = np.ones((M.shape[1], ), dtype=np.float64)/M.shape[1]
+        b = np.ones((M.shape[1],), dtype=np.float64) / M.shape[1]
 
-    return emd_c(a, b, M)
+    G, cost, u, v, result_code = emd_c(a, b, M, numItermax)
+    result_code_string = check_result(result_code)
+    if log:
+        log = {}
+        log['cost'] = cost
+        log['u'] = u
+        log['v'] = v
+        log['warning'] = result_code_string
+        log['result_code'] = result_code
+        return G, log
+    return G
 
-def emd2(a, b, M,processes=multiprocessing.cpu_count()):
-    """Solves the Earth Movers distance problem and returns the loss 
+
+def emd2(a, b, M, processes=multiprocessing.cpu_count(), numItermax=100000, log=False, return_matrix=False):
+    """Solves the Earth Movers distance problem and returns the loss
 
     .. math::
         \gamma = arg\min_\gamma <\gamma,M>_F
@@ -106,11 +131,22 @@ def emd2(a, b, M,processes=multiprocessing.cpu_count()):
         Target histogram (uniform weigth if empty list)
     M : (ns,nt) ndarray, float64
         loss matrix
+    numItermax : int, optional (default=100000)
+        The maximum number of iterations before stopping the optimization
+        algorithm if it has not converged.
+    log: boolean, optional (default=False)
+        If True, returns a dictionary containing the cost and dual
+        variables. Otherwise returns only the optimal transportation cost.
+    return_matrix: boolean, optional (default=False)
+        If True, returns the optimal transportation matrix in the log.
 
     Returns
     -------
     gamma: (ns x nt) ndarray
         Optimal transportation matrix for the given parameters
+    log: dict
+        If input log is true, a dictionary containing the cost and dual
+        variables and exit status
 
 
     Examples
@@ -118,15 +154,15 @@ def emd2(a, b, M,processes=multiprocessing.cpu_count()):
 
     Simple example with obvious solution. The function emd accepts lists and
     perform automatic conversion to numpy arrays
-    
-    
+
+
     >>> import ot
     >>> a=[.5,.5]
     >>> b=[.5,.5]
     >>> M=[[0.,1.],[1.,0.]]
     >>> ot.emd2(a,b,M)
     0.0
-    
+
     References
     ----------
 
@@ -146,19 +182,31 @@ def emd2(a, b, M,processes=multiprocessing.cpu_count()):
 
     # if empty array given then use unifor distributions
     if len(a) == 0:
-        a = np.ones((M.shape[0], ), dtype=np.float64)/M.shape[0]
+        a = np.ones((M.shape[0],), dtype=np.float64) / M.shape[0]
     if len(b) == 0:
-        b = np.ones((M.shape[1], ), dtype=np.float64)/M.shape[1]
-        
-    if len(b.shape)==1:
-        return emd2_c(a, b, M)
-    else:
-        nb=b.shape[1]
-        #res=[emd2_c(a,b[:,i].copy(),M) for i in range(nb)]
-        def f(b):
-            return emd2_c(a,b,M)
-        res= parmap(f, [b[:,i] for i in range(nb)],processes)
-        return np.array(res)
-        
+        b = np.ones((M.shape[1],), dtype=np.float64) / M.shape[1]
 
-  
+    if log or return_matrix:
+        def f(b):
+            G, cost, u, v, resultCode = emd_c(a, b, M, numItermax)
+            result_code_string = check_result(resultCode)
+            log = {}
+            if return_matrix:
+                log['G'] = G
+            log['u'] = u
+            log['v'] = v
+            log['warning'] = result_code_string
+            log['result_code'] = resultCode
+            return [cost, log]
+    else:
+        def f(b):
+            G, cost, u, v, result_code = emd_c(a, b, M, numItermax)
+            check_result(result_code)
+            return cost
+
+    if len(b.shape) == 1:
+        return f(b)
+    nb = b.shape[1]
+
+    res = parmap(f, [b[:, i] for i in range(nb)], processes)
+    return res

@@ -4,12 +4,22 @@
 2D Optimal transport between empirical distributions
 ====================================================
 
-@author: rflamary
+Illustration of 2D optimal transport between discributions that are weighted
+sum of diracs. The OT matrix is plotted with the samples.
+
 """
+
+# Author: Remi Flamary <remi.flamary@unice.fr>
+#
+# License: MIT License
 
 import numpy as np
 import matplotlib.pylab as pl
 import ot
+
+##############################################################################
+# Generate data
+# -------------
 
 #%% parameters and data generation
 
@@ -30,6 +40,10 @@ a, b = np.ones((n,)) / n, np.ones((n,)) / n  # uniform distribution on samples
 M = ot.dist(xs, xt)
 M /= M.max()
 
+##############################################################################
+# Plot data
+# ---------
+
 #%% plot samples
 
 pl.figure(1)
@@ -42,6 +56,9 @@ pl.figure(2)
 pl.imshow(M, interpolation='nearest')
 pl.title('Cost matrix M')
 
+##############################################################################
+# Compute EMD
+# -----------
 
 #%% EMD
 
@@ -59,10 +76,14 @@ pl.legend(loc=0)
 pl.title('OT matrix with samples')
 
 
+##############################################################################
+# Compute Sinkhorn
+# ----------------
+
 #%% sinkhorn
 
 # reg term
-lambd = 5e-4
+lambd = 1e-3
 
 Gs = ot.sinkhorn(a, b, M, lambd)
 

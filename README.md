@@ -1,8 +1,12 @@
 # POT: Python Optimal Transport
 
 [![PyPI version](https://badge.fury.io/py/POT.svg)](https://badge.fury.io/py/POT)
+[![Anaconda Cloud](https://anaconda.org/conda-forge/pot/badges/version.svg)](https://anaconda.org/conda-forge/pot)
 [![Build Status](https://travis-ci.org/rflamary/POT.svg?branch=master)](https://travis-ci.org/rflamary/POT)
 [![Documentation Status](https://readthedocs.org/projects/pot/badge/?version=latest)](http://pot.readthedocs.io/en/latest/?badge=latest)
+[![Anaconda downloads](https://anaconda.org/conda-forge/pot/badges/downloads.svg)](https://anaconda.org/conda-forge/pot)
+[![License](https://anaconda.org/conda-forge/pot/badges/license.svg)](https://github.com/rflamary/POT/blob/master/LICENSE)
+
 
 
 This open source Python library provide several solvers for optimization problems related to Optimal Transport for signal, image processing and machine learning.
@@ -16,7 +20,7 @@ It provides the following solvers:
 * Conditional gradient [6] and Generalized conditional gradient for regularized OT [7].
 * Joint OT matrix and mapping estimation [8].
 * Wasserstein Discriminant Analysis [11] (requires autograd + pymanopt).
-
+* Gromov-Wasserstein distances and barycenters [12]
 
 Some demonstrations (both in Python and Jupyter Notebook format) are available in the examples folder.
 
@@ -112,17 +116,21 @@ The examples folder contain several examples and use case for the library. The f
 
 Here is a list of the Python notebooks available [here](https://github.com/rflamary/POT/blob/master/notebooks/) if you want a quick look:
 
-* [1D optimal transport](https://github.com/rflamary/POT/blob/master/notebooks/Demo_1D_OT.ipynb)
-* [OT Ground Loss](https://github.com/rflamary/POT/blob/master/notebooks/Demo_Ground_Loss.ipynb)
-* [Multiple EMD computation](https://github.com/rflamary/POT/blob/master/notebooks/Demo_Compute_EMD.ipynb)
-* [2D optimal transport on empirical distributions](https://github.com/rflamary/POT/blob/master/notebooks/Demo_2D_OT_samples.ipynb)
-* [1D Wasserstein barycenter](https://github.com/rflamary/POT/blob/master/notebooks/Demo_1D_barycenter.ipynb)
-* [OT with user provided regularization](https://github.com/rflamary/POT/blob/master/notebooks/Demo_Optim_OTreg.ipynb)
-* [Domain adaptation with optimal transport](https://github.com/rflamary/POT/blob/master/notebooks/Demo_2D_OT_DomainAdaptation.ipynb)
-* [Color transfer in images](https://github.com/rflamary/POT/blob/master/notebooks/Demo_Image_ColorAdaptation.ipynb)
-* [OT mapping estimation for domain adaptation](https://github.com/rflamary/POT/blob/master/notebooks/Demo_2D_OTmapping_DomainAdaptation.ipynb)
-* [OT mapping estimation for color transfer in images](https://github.com/rflamary/POT/blob/master/notebooks/Demo_Image_ColorAdaptation_mapping.ipynb)
-* [Wasserstein Discriminant Analysis](https://github.com/rflamary/POT/blob/master/notebooks/Demo_Wasserstein_Discriminant_Analysis.ipynb)
+* [1D optimal transport](https://github.com/rflamary/POT/blob/master/notebooks/plot_OT_1D.ipynb)
+* [OT Ground Loss](https://github.com/rflamary/POT/blob/master/notebooks/plot_OT_L1_vs_L2.ipynb)
+* [Multiple EMD computation](https://github.com/rflamary/POT/blob/master/notebooks/plot_compute_emd.ipynb)
+* [2D optimal transport on empirical distributions](https://github.com/rflamary/POT/blob/master/notebooks/plot_OT_2D_samples.ipynb)
+* [1D Wasserstein barycenter](https://github.com/rflamary/POT/blob/master/notebooks/plot_barycenter_1D.ipynb)
+* [OT with user provided regularization](https://github.com/rflamary/POT/blob/master/notebooks/plot_optim_OTreg.ipynb)
+* [Domain adaptation with optimal transport](https://github.com/rflamary/POT/blob/master/notebooks/plot_otda_d2.ipynb)
+* [Color transfer in images](https://github.com/rflamary/POT/blob/master/notebooks/plot_otda_color_images.ipynb)
+* [OT mapping estimation for domain adaptation](https://github.com/rflamary/POT/blob/master/notebooks/plot_otda_mapping.ipynb)
+* [OT mapping estimation for color transfer in images](https://github.com/rflamary/POT/blob/master/notebooks/plot_otda_mapping_colors_images.ipynb)
+* [Wasserstein Discriminant Analysis](https://github.com/rflamary/POT/blob/master/notebooks/plot_WDA.ipynb)
+* [Gromov Wasserstein](https://github.com/rflamary/POT/blob/master/notebooks/plot_gromov.ipynb)
+* [Gromov Wasserstein Barycenter](https://github.com/rflamary/POT/blob/master/notebooks/plot_gromov_barycenter.ipynb)
+
+
 
 You can also see the notebooks with [Jupyter nbviewer](https://nbviewer.jupyter.org/github/rflamary/POT/tree/master/notebooks/).
 
@@ -136,15 +144,27 @@ The contributors to this library are:
 * [Laetitia Chapel](http://people.irisa.fr/Laetitia.Chapel/)
 * [Michael Perrot](http://perso.univ-st-etienne.fr/pem82055/) (Mapping estimation)
 * [Léo Gautheron](https://github.com/aje) (GPU implementation)
+* [Nathalie Gayraud](https://www.linkedin.com/in/nathalie-t-h-gayraud/?ppe=1)
+* [Stanislas Chambon](https://slasnista.github.io/)
+* [Antoine Rolet](https://arolet.github.io/)
+* Erwan Vautier (Gromov-Wasserstein)
 
 This toolbox benefit a lot from open source research and we would like to thank the following persons for providing some code (in various languages):
 
 * [Gabriel Peyré](http://gpeyre.github.io/) (Wasserstein Barycenters in Matlab)
 * [Nicolas Bonneel](http://liris.cnrs.fr/~nbonneel/) ( C++ code for EMD)
-* [Antoine Rolet](https://arolet.github.io/) ( Mex file for EMD )
 * [Marco Cuturi](http://marcocuturi.net/) (Sinkhorn Knopp in Matlab/Cuda)
 
+## Using and citing the toolbox
 
+If you use this toolbox in your research and find it useful, please cite POT using the following bibtex reference:
+```
+@article{flamary2017pot,
+  title={POT Python Optimal Transport library},
+  author={Flamary, R{\'e}mi and Courty, Nicolas},
+  year={2017}
+}
+```
 ## Contributions and code of conduct
 
 Every contribution is welcome and should respect the [contribution guidelines](CONTRIBUTING.md). Each member of the project is expected to follow the [code of conduct](CODE_OF_CONDUCT.md).
@@ -182,3 +202,7 @@ You can also post bug reports and feature requests in Github issues. Make sure t
 [10] Chizat, L., Peyré, G., Schmitzer, B., & Vialard, F. X. (2016). [Scaling algorithms for unbalanced transport problems](https://arxiv.org/pdf/1607.05816.pdf). arXiv preprint arXiv:1607.05816.
 
 [11] Flamary, R., Cuturi, M., Courty, N., & Rakotomamonjy, A. (2016). [Wasserstein Discriminant Analysis](https://arxiv.org/pdf/1608.08063.pdf). arXiv preprint arXiv:1608.08063.
+
+[12] Gabriel Peyré, Marco Cuturi, and Justin Solomon, [Gromov-Wasserstein averaging of kernel and distance matrices](http://proceedings.mlr.press/v48/peyre16.html)  International Conference on Machine Learning (ICML). 2016.
+
+[13] Mémoli, Facundo. [Gromov–Wasserstein distances and the metric approach to object matching](https://media.adelaide.edu.au/acvt/Publications/2011/2011-Gromov%E2%80%93Wasserstein%20Distances%20and%20the%20Metric%20Approach%20to%20Object%20Matching.pdf). Foundations of computational mathematics 11.4 (2011): 417-487.

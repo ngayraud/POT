@@ -15,6 +15,9 @@ help :
 build :
 	$(PYTHON) setup.py build
 
+buildext :
+	$(PYTHON) setup.py build_ext --inplace
+
 install :
 	$(PYTHON) setup.py install --user
 
@@ -38,10 +41,10 @@ pep8 :
 	flake8 examples/ ot/ test/
 
 test : FORCE pep8
-	python -m py.test -v test/
+	python -m py.test -v test/ --cov=ot --cov-report html:cov_html
 	
 pytest : FORCE 
-	python -m py.test -v test/	
+	python -m py.test -v test/ --cov=ot
 
 uploadpypi :
 	#python setup.py register

@@ -4,14 +4,27 @@
 Wasserstein Discriminant Analysis
 =================================
 
-@author: rflamary
+This example illustrate the use of WDA as proposed in [11].
+
+
+[11] Flamary, R., Cuturi, M., Courty, N., & Rakotomamonjy, A. (2016).
+Wasserstein Discriminant Analysis.
+
 """
+
+# Author: Remi Flamary <remi.flamary@unice.fr>
+#
+# License: MIT License
 
 import numpy as np
 import matplotlib.pylab as pl
 
 from ot.dr import wda, fda
 
+
+##############################################################################
+# Generate data
+# -------------
 
 #%% parameters
 
@@ -36,6 +49,10 @@ nbnoise = 8
 xs = np.hstack((xs, np.random.randn(n, nbnoise)))
 xt = np.hstack((xt, np.random.randn(n, nbnoise)))
 
+##############################################################################
+# Plot data
+# ---------
+
 #%% plot samples
 pl.figure(1, figsize=(6.4, 3.5))
 
@@ -50,10 +67,18 @@ pl.legend(loc=0)
 pl.title('Other dimensions')
 pl.tight_layout()
 
+##############################################################################
+# Compute Fisher Discriminant Analysis
+# ------------------------------------
+
 #%% Compute FDA
 p = 2
 
 Pfda, projfda = fda(xs, ys, p)
+
+##############################################################################
+# Compute Wasserstein Discriminant Analysis
+# -----------------------------------------
 
 #%% Compute WDA
 p = 2
@@ -62,6 +87,11 @@ k = 10
 maxiter = 100
 
 Pwda, projwda = wda(xs, ys, p, reg, k, maxiter=maxiter)
+
+
+##############################################################################
+# Plot 2D projections
+# -------------------
 
 #%% plot samples
 
