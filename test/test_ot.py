@@ -9,7 +9,8 @@ import warnings
 import numpy as np
 
 import ot
-from ot.datasets import get_1D_gauss as gauss
+from ot.datasets import make_1D_gauss as gauss
+import pytest
 
 
 def test_doctest():
@@ -69,7 +70,7 @@ def test_emd_empty():
 
 
 def test_emd2_multi():
-    n = 1000  # nb bins
+    n = 500  # nb bins
 
     # bin positions
     x = np.arange(n, dtype=np.float64)
@@ -77,7 +78,7 @@ def test_emd2_multi():
     # Gaussian distributions
     a = gauss(n, m=20, s=5)  # m= mean, s= std
 
-    ls = np.arange(20, 1000, 20)
+    ls = np.arange(20, 500, 20)
     nb = len(ls)
     b = np.zeros((n, nb))
     for i in range(nb):
@@ -115,6 +116,56 @@ def test_emd2_multi():
 
     emdn = np.array(emdn)
     np.testing.assert_allclose(emd1, emdn)
+
+
+def test_lp_barycenter():
+
+    a1 = np.array([1.0, 0, 0])[:, None]
+    a2 = np.array([0, 0, 1.0])[:, None]
+
+    A = np.hstack((a1, a2))
+    M = np.array([[0, 1.0, 4.0], [1.0, 0, 1.0], [4.0, 1.0, 0]])
+
+    # obvious barycenter between two diracs
+    bary0 = np.array([0, 1.0, 0])
+
+    bary = ot.lp.barycenter(A, M, [.5, .5])
+
+    np.testing.assert_allclose(bary, bary0, rtol=1e-5, atol=1e-7)
+    np.testing.assert_allclose(bary.sum(), 1)
+
+
+def test_free_support_barycenter():
+
+    measures_locations = [np.array([-1.]).reshape((1, 1)), np.array([1.]).reshape((1, 1))]
+    measures_weights = [np.array([1.]), np.array([1.])]
+
+    X_init = np.array([-12.]).reshape((1, 1))
+
+    # obvious barycenter location between two diracs
+    bar_locations = np.array([0.]).reshape((1, 1))
+
+    X = ot.lp.free_support_barycenter(measures_locations, measures_weights, X_init)
+
+    np.testing.assert_allclose(X, bar_locations, rtol=1e-5, atol=1e-7)
+
+
+@pytest.mark.skipif(not ot.lp.cvx.cvxopt, reason="No cvxopt available")
+def test_lp_barycenter_cvxopt():
+
+    a1 = np.array([1.0, 0, 0])[:, None]
+    a2 = np.array([0, 0, 1.0])[:, None]
+
+    A = np.hstack((a1, a2))
+    M = np.array([[0, 1.0, 4.0], [1.0, 0, 1.0], [4.0, 1.0, 0]])
+
+    # obvious barycenter between two diracs
+    bary0 = np.array([0, 1.0, 0])
+
+    bary = ot.lp.barycenter(A, M, [.5, .5], solver=None)
+
+    np.testing.assert_allclose(bary, bary0, rtol=1e-5, atol=1e-7)
+    np.testing.assert_allclose(bary.sum(), 1)
 
 
 def test_warnings():
@@ -156,11 +207,11 @@ def test_warnings():
 
 
 def test_dual_variables():
-    n = 5000  # nb bins
-    m = 6000  # nb bins
+    n = 500  # nb bins
+    m = 600  # nb bins
 
-    mean1 = 1000
-    mean2 = 1100
+    mean1 = 300
+    mean2 = 400
 
     # bin positions
     x = np.arange(n, dtype=np.float64)

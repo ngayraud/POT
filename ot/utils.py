@@ -15,7 +15,10 @@ import numpy as np
 from scipy.spatial.distance import cdist
 import sys
 import warnings
-
+try:
+    from inspect import signature
+except ImportError:
+    from .externals.funcsigs import signature
 
 __time_tic_toc = time.time()
 
@@ -74,6 +77,34 @@ def clean_zeros(a, b, M):
     return a2, b2, M2
 
 
+def euclidean_distances(X, Y, squared=False):
+    """
+    Considering the rows of X (and Y=X) as vectors, compute the
+    distance matrix between each pair of vectors.
+    Parameters
+    ----------
+    X : {array-like}, shape (n_samples_1, n_features)
+    Y : {array-like}, shape (n_samples_2, n_features)
+    squared : boolean, optional
+        Return squared Euclidean distances.
+    Returns
+    -------
+    distances : {array}, shape (n_samples_1, n_samples_2)
+    """
+    XX = np.einsum('ij,ij->i', X, X)[:, np.newaxis]
+    YY = np.einsum('ij,ij->i', Y, Y)[np.newaxis, :]
+    distances = np.dot(X, Y.T)
+    distances *= -2
+    distances += XX
+    distances += YY
+    np.maximum(distances, 0, out=distances)
+    if X is Y:
+        # Ensure that distances between vectors and themselves are set to 0.0.
+        # This may not be the case due to floating point rounding errors.
+        distances.flat[::distances.shape[0] + 1] = 0.0
+    return distances if squared else np.sqrt(distances, out=distances)
+
+
 def dist(x1, x2=None, metric='sqeuclidean'):
     """Compute distance between samples in x1 and x2 using function scipy.spatial.distance.cdist
 
@@ -101,7 +132,8 @@ def dist(x1, x2=None, metric='sqeuclidean'):
     """
     if x2 is None:
         x2 = x1
-
+    if metric == "sqeuclidean":
+        return euclidean_distances(x1, x2, squared=True)
     return cdist(x1, x2, metric=metric)
 
 
@@ -222,6 +254,26 @@ def check_params(**kwargs):
     return check
 
 
+def check_random_state(seed):
+    """Turn seed into a np.random.RandomState instance
+    Parameters
+    ----------
+    seed : None | int | instance of RandomState
+        If seed is None, return the RandomState singleton used by np.random.
+        If seed is an int, return a new RandomState instance seeded with seed.
+        If seed is already a RandomState instance, return it.
+        Otherwise raise ValueError.
+    """
+    if seed is None or seed is np.random:
+        return np.random.mtrand._rand
+    if isinstance(seed, (int, np.integer)):
+        return np.random.RandomState(seed)
+    if isinstance(seed, np.random.RandomState):
+        return seed
+    raise ValueError('{} cannot be used to seed a numpy.random.RandomState'
+                     ' instance'.format(seed))
+
+
 class deprecated(object):
 
     """Decorator to mark a function or class as deprecated.
@@ -316,7 +368,7 @@ def _is_deprecated(func):
         closures = []
     is_deprecated = ('deprecated' in ''.join([c.cell_contents
                                               for c in closures
-                     if isinstance(c.cell_contents, str)]))
+                                              if isinstance(c.cell_contents, str)]))
     return is_deprecated
 
 
@@ -335,10 +387,7 @@ class BaseEstimator(object):
     @classmethod
     def _get_param_names(cls):
         """Get parameter names for the estimator"""
-        try:
-            from inspect import signature
-        except ImportError:
-            from .externals.funcsigs import signature
+
         # fetch the constructor or the original constructor before
         # deprecation wrapping if any
         init = getattr(cls.__init__, 'deprecated_original', cls.__init__)

@@ -1,7 +1,8 @@
 numpy
-scipy
+scipy>=1.0
 cython
 matplotlib
 sphinx-gallery
 autograd
 pymanopt
+pytest

@@ -1,8 +1,8 @@
 POT: Python Optimal Transport
 =============================
 
-|PyPI version| |Build Status| |Documentation Status| |Anaconda Cloud|
-|License| |Anaconda downloads|
+|PyPI version| |Anaconda Cloud| |Build Status| |Documentation Status|
+|Downloads| |Anaconda downloads| |License|
 
 This open source Python library provide several solvers for optimization
 problems related to Optimal Transport for signal, image processing and
@@ -10,22 +10,47 @@ machine learning.
 
 It provides the following solvers:
 
--  OT solver for the linear program/ Earth Movers Distance [1].
+-  OT Network Flow solver for the linear program/ Earth Movers Distance
+   [1].
 -  Entropic regularization OT solver with Sinkhorn Knopp Algorithm [2]
-   and stabilized version [9][10] with optional GPU implementation
-   (required cudamat).
--  Bregman projections for Wasserstein barycenter [3] and unmixing [4].
+   and stabilized version [9][10] and greedy SInkhorn [22] with optional
+   GPU implementation (requires cudamat).
+-  Smooth optimal transport solvers (dual and semi-dual) for KL and
+   squared L2 regularizations [17].
+-  Non regularized Wasserstein barycenters [16] with LP solver (only
+   small scale).
+-  Bregman projections for Wasserstein barycenter [3], convolutional
+   barycenter [21] and unmixing [4].
 -  Optimal transport for domain adaptation with group lasso
    regularization [5]
 -  Conditional gradient [6] and Generalized conditional gradient for
    regularized OT [7].
--  Joint OT matrix and mapping estimation [8].
+-  Linear OT [14] and Joint OT matrix and mapping estimation [8].
 -  Wasserstein Discriminant Analysis [11] (requires autograd +
    pymanopt).
--  Gromov-Wasserstein distances and barycenters [12]
+-  Gromov-Wasserstein distances and barycenters ([13] and regularized
+   [12])
+-  Stochastic Optimization for Large-scale Optimal Transport (semi-dual
+   problem [18] and dual problem [19])
+-  Non regularized free support Wasserstein barycenters [20].
 
 Some demonstrations (both in Python and Jupyter Notebook format) are
 available in the examples folder.
+
+Using and citing the toolbox
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you use this toolbox in your research and find it useful, please cite
+POT using the following bibtex reference:
+
+::
+
+    @misc{flamary2017pot,
+    title={POT Python Optimal Transport library},
+    author={Flamary, R{'e}mi and Courty, Nicolas},
+    url={https://github.com/rflamary/POT},
+    year={2017}
+    }
 
 Installation
 ------------
@@ -35,7 +60,7 @@ C++ compiler for using the EMD solver and relies on the following Python
 modules:
 
 -  Numpy (>=1.11)
--  Scipy (>=0.17)
+-  Scipy (>=1.0)
 -  Cython (>=0.23)
 -  Matplotlib (>=1.5)
 
@@ -83,7 +108,7 @@ Dependencies
 Some sub-modules require additional dependences which are discussed
 below
 
--  **ot.dr** (Wasserstein dimensionality rediuction) depends on autograd
+-  **ot.dr** (Wasserstein dimensionality reduction) depends on autograd
    and pymanopt that can be installed with:
 
    ::
@@ -198,6 +223,9 @@ The contributors to this library are:
 -  `Stanislas Chambon <https://slasnista.github.io/>`__
 -  `Antoine Rolet <https://arolet.github.io/>`__
 -  Erwan Vautier (Gromov-Wasserstein)
+-  `Kilian Fatras <https://kilianfatras.github.io/>`__
+-  `Alain
+   Rakotomamonjy <https://sites.google.com/site/alainrakotomamonjy/home>`__
 
 This toolbox benefit a lot from open source research and we would like
 to thank the following persons for providing some code (in various
@@ -209,20 +237,6 @@ languages):
    EMD)
 -  `Marco Cuturi <http://marcocuturi.net/>`__ (Sinkhorn Knopp in
    Matlab/Cuda)
-
-Using and citing the toolbox
-----------------------------
-
-If you use this toolbox in your research and find it useful, please cite
-POT using the following bibtex reference:
-
-::
-
-    @article{flamary2017pot,
-      title={POT Python Optimal Transport library},
-      author={Flamary, R{\'e}mi and Courty, Nicolas},
-      year={2017}
-    }
 
 Contributions and code of conduct
 ---------------------------------
@@ -281,10 +295,10 @@ conditional gradient: analysis of convergence and
 applications <https://arxiv.org/pdf/1510.06567.pdf>`__. arXiv preprint
 arXiv:1510.06567.
 
-[8] M. Perrot, N. Courty, R. Flamary, A. Habrard, `Mapping estimation
-for discrete optimal
+[8] M. Perrot, N. Courty, R. Flamary, A. Habrard (2016), `Mapping
+estimation for discrete optimal
 transport <http://remi.flamary.com/biblio/perrot2016mapping.pdf>`__,
-Neural Information Processing Systems (NIPS), 2016.
+Neural Information Processing Systems (NIPS).
 
 [9] Schmitzer, B. (2016). `Stabilized Sparse Scaling Algorithms for
 Entropy Regularized Transport
@@ -301,25 +315,68 @@ arXiv:1607.05816.
 Analysis <https://arxiv.org/pdf/1608.08063.pdf>`__. arXiv preprint
 arXiv:1608.08063.
 
-[12] Gabriel Peyré, Marco Cuturi, and Justin Solomon,
+[12] Gabriel Peyré, Marco Cuturi, and Justin Solomon (2016),
 `Gromov-Wasserstein averaging of kernel and distance
 matrices <http://proceedings.mlr.press/v48/peyre16.html>`__
-International Conference on Machine Learning (ICML). 2016.
+International Conference on Machine Learning (ICML).
 
-[13] Mémoli, Facundo. `Gromov–Wasserstein distances and the metric
-approach to object
+[13] Mémoli, Facundo (2011). `Gromov–Wasserstein distances and the
+metric approach to object
 matching <https://media.adelaide.edu.au/acvt/Publications/2011/2011-Gromov%E2%80%93Wasserstein%20Distances%20and%20the%20Metric%20Approach%20to%20Object%20Matching.pdf>`__.
-Foundations of computational mathematics 11.4 (2011): 417-487.
+Foundations of computational mathematics 11.4 : 417-487.
+
+[14] Knott, M. and Smith, C. S. (1984).`On the optimal mapping of
+distributions <https://link.springer.com/article/10.1007/BF00934745>`__,
+Journal of Optimization Theory and Applications Vol 43.
+
+[15] Peyré, G., & Cuturi, M. (2018). `Computational Optimal
+Transport <https://arxiv.org/pdf/1803.00567.pdf>`__ .
+
+[16] Agueh, M., & Carlier, G. (2011). `Barycenters in the Wasserstein
+space <https://hal.archives-ouvertes.fr/hal-00637399/document>`__. SIAM
+Journal on Mathematical Analysis, 43(2), 904-924.
+
+[17] Blondel, M., Seguy, V., & Rolet, A. (2018). `Smooth and Sparse
+Optimal Transport <https://arxiv.org/abs/1710.06276>`__. Proceedings of
+the Twenty-First International Conference on Artificial Intelligence and
+Statistics (AISTATS).
+
+[18] Genevay, A., Cuturi, M., Peyré, G. & Bach, F. (2016) `Stochastic
+Optimization for Large-scale Optimal
+Transport <https://arxiv.org/abs/1605.08527>`__. Advances in Neural
+Information Processing Systems (2016).
+
+[19] Seguy, V., Bhushan Damodaran, B., Flamary, R., Courty, N., Rolet,
+A.& Blondel, M. `Large-scale Optimal Transport and Mapping
+Estimation <https://arxiv.org/pdf/1711.02283.pdf>`__. International
+Conference on Learning Representation (2018)
+
+[20] Cuturi, M. and Doucet, A. (2014) `Fast Computation of Wasserstein
+Barycenters <http://proceedings.mlr.press/v32/cuturi14.html>`__.
+International Conference in Machine Learning
+
+[21] Solomon, J., De Goes, F., Peyré, G., Cuturi, M., Butscher, A.,
+Nguyen, A. & Guibas, L. (2015). `Convolutional wasserstein distances:
+Efficient optimal transportation on geometric
+domains <https://dl.acm.org/citation.cfm?id=2766963>`__. ACM
+Transactions on Graphics (TOG), 34(4), 66.
+
+[22] J. Altschuler, J.Weed, P. Rigollet, (2017) `Near-linear time
+approximation algorithms for optimal transport via Sinkhorn
+iteration <https://papers.nips.cc/paper/6792-near-linear-time-approximation-algorithms-for-optimal-transport-via-sinkhorn-iteration.pdf>`__,
+Advances in Neural Information Processing Systems (NIPS) 31
 
 .. |PyPI version| image:: https://badge.fury.io/py/POT.svg
    :target: https://badge.fury.io/py/POT
+.. |Anaconda Cloud| image:: https://anaconda.org/conda-forge/pot/badges/version.svg
+   :target: https://anaconda.org/conda-forge/pot
 .. |Build Status| image:: https://travis-ci.org/rflamary/POT.svg?branch=master
    :target: https://travis-ci.org/rflamary/POT
 .. |Documentation Status| image:: https://readthedocs.org/projects/pot/badge/?version=latest
    :target: http://pot.readthedocs.io/en/latest/?badge=latest
-.. |Anaconda Cloud| image:: https://anaconda.org/conda-forge/pot/badges/version.svg
+.. |Downloads| image:: https://pepy.tech/badge/pot
+   :target: https://pepy.tech/project/pot
+.. |Anaconda downloads| image:: https://anaconda.org/conda-forge/pot/badges/downloads.svg
    :target: https://anaconda.org/conda-forge/pot
 .. |License| image:: https://anaconda.org/conda-forge/pot/badges/license.svg
    :target: https://github.com/rflamary/POT/blob/master/LICENSE
-.. |Anaconda downloads| image:: https://anaconda.org/conda-forge/pot/badges/downloads.svg
-   :target: https://anaconda.org/conda-forge/pot

@@ -1,6 +1,7 @@
 
 
-PYTHON=python
+PYTHON=python3
+branch := $(shell git symbolic-ref --short -q HEAD)
 
 help :
 	@echo "The following make targets are available:"
@@ -41,14 +42,14 @@ pep8 :
 	flake8 examples/ ot/ test/
 
 test : FORCE pep8
-	python -m py.test -v test/ --cov=ot --cov-report html:cov_html
+	$(PYTHON) -m pytest -v test/ --cov=ot --cov-report html:cov_html
 	
 pytest : FORCE 
-	python -m py.test -v test/ --cov=ot
+	$(PYTHON) -m pytest -v test/ --cov=ot
 
 uploadpypi :
 	#python setup.py register
-	python setup.py sdist upload -r pypi
+	$(PYTHON) setup.py sdist upload -r pypi
 
 rdoc :
 	pandoc --from=markdown --to=rst --output=docs/source/readme.rst README.md
@@ -56,6 +57,21 @@ rdoc :
 
 notebook :
 	ipython notebook --matplotlib=inline  --notebook-dir=notebooks/
+	
+bench : 
+	@git stash  >/dev/null 2>&1
+	@echo 'Branch master'
+	@git checkout master >/dev/null 2>&1
+	python3 $(script)
+	@echo 'Branch $(branch)'
+	@git checkout $(branch) >/dev/null 2>&1
+	python3 $(script)
+	@git stash apply >/dev/null 2>&1
+	
+autopep8 :
+	autopep8 -ir test ot examples --jobs -1
 
+aautopep8 :
+	autopep8 -air test ot examples --jobs -1
 
 FORCE :
