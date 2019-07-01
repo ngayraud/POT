@@ -6,6 +6,7 @@ Bregman projections for regularized OT
 # Author: Remi Flamary <remi.flamary@unice.fr>
 #         Nicolas Courty <ncourty@irisa.fr>
 #         Kilian Fatras <kilian.fatras@irisa.fr>
+#         Titouan Vayer <titouan.vayer@irisa.fr>
 #
 # License: MIT License
 
@@ -240,7 +241,7 @@ def sinkhorn2(a, b, M, reg, method='sinkhorn', numItermax=1000,
 
     b = np.asarray(b, dtype=np.float64)
     if len(b.shape) < 2:
-        b = b.reshape((-1, 1))
+        b = b[:, None]
 
     return sink()
 

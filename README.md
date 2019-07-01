@@ -27,6 +27,7 @@ It provides the following solvers:
 * Gromov-Wasserstein distances and barycenters ([13] and regularized [12])
 * Stochastic Optimization for Large-scale Optimal Transport (semi-dual problem [18] and dual problem [19])
 * Non regularized free support Wasserstein barycenters [20].
+* Unbalanced OT with KL relaxation distance and barycenter [10, 25].
 
 Some demonstrations (both in Python and Jupyter Notebook format) are available in the examples folder.
 
@@ -164,6 +165,9 @@ The contributors to this library are:
 * Erwan Vautier (Gromov-Wasserstein)
 * [Kilian Fatras](https://kilianfatras.github.io/)
 * [Alain Rakotomamonjy](https://sites.google.com/site/alainrakotomamonjy/home)
+* [Vayer Titouan](https://tvayer.github.io/)
+* [Hicham Janati](https://hichamjanati.github.io/) (Unbalanced OT)
+* [Romain Tavenard](https://rtavenar.github.io/) (1d Wasserstein)
 
 This toolbox benefit a lot from open source research and we would like to thank the following persons for providing some code (in various languages):
 
@@ -233,3 +237,7 @@ You can also post bug reports and feature requests in Github issues. Make sure t
 [22] J. Altschuler, J.Weed, P. Rigollet, (2017) [Near-linear time approximation algorithms for optimal transport via Sinkhorn iteration](https://papers.nips.cc/paper/6792-near-linear-time-approximation-algorithms-for-optimal-transport-via-sinkhorn-iteration.pdf), Advances in Neural Information Processing Systems (NIPS) 31
 
 [23] Aude, G., Peyré, G., Cuturi, M., [Learning Generative Models with Sinkhorn Divergences](https://arxiv.org/abs/1706.00292), Proceedings of the Twenty-First International Conference on Artficial Intelligence and Statistics, (AISTATS) 21, 2018
+
+[24] Vayer, T., Chapel, L., Flamary, R., Tavenard, R. and Courty, N. (2019). [Optimal Transport for structured data with application on graphs](http://proceedings.mlr.press/v97/titouan19a.html) Proceedings of the 36th International Conference on Machine Learning (ICML).
+
+[25] Frogner C., Zhang C., Mobahi H., Araya-Polo M., Poggio T. (2019). [Learning with a Wasserstein Loss](http://cbcl.mit.edu/wasserstein/)  Advances in Neural Information Processing Systems (NIPS).
