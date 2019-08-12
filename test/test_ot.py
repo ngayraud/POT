@@ -14,16 +14,6 @@ from ot.datasets import make_1D_gauss as gauss
 import pytest
 
 
-def test_doctest():
-    import doctest
-
-    # test lp solver
-    doctest.testmod(ot.lp, verbose=True)
-
-    # test bregman solver
-    doctest.testmod(ot.bregman, verbose=True)
-
-
 def test_emd_emd2():
     # test emd and emd2 for simple identity
     n = 100
@@ -82,7 +72,8 @@ def test_emd_1d_emd2_1d():
     # check AssertionError is raised if called on non 1d arrays
     u = np.random.randn(n, 2)
     v = np.random.randn(m, 2)
-    np.testing.assert_raises(AssertionError, ot.emd_1d, u, v, [], [])
+    with pytest.raises(AssertionError):
+        ot.emd_1d(u, v, [], [])
 
 
 def test_wass_1d():
